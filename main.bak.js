@@ -3,7 +3,7 @@ console.info("解析帖子信息。。。");
 var teilist = $("li.j_thread_list.clearfix");
 var baselink = "http://tieba.baidu.com/";
 console.info("设置特别关注用户......");
-var fav = ["w594669442"];
+var fav = ["lxy5266"]; //修改关注用户
 window.Notification.requestPermission();
 var Notification = window.Notification || window.mozNotification || window.webkitNotification;
 
