@@ -2,7 +2,7 @@
 console.info("解析帖子信息......");
 var teilist = document.getElementsByClassName("j_thread_list clearfix");
 console.info("设置特别关注用户......\n");
-var fav=["silence_0988"];
+var fav=["lxy5266"];
 window.Notification.requestPermission();
 var Notification = window.Notification || window.mozNotification || window.webkitNotification;
 
