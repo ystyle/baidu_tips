@@ -19,7 +19,7 @@ teilist.each(function () {
         var name = $(this).text();
         if ($.inArray(name, fav) != -1) {
             console.info("扫描到关注用户，打开新窗口......");
-            show(name+"有新帖子",link,link);
+            show(name + "有新帖子", link, link);
             adom.click();
         }
     });
@@ -31,15 +31,15 @@ teilist.each(function () {
  * @param msg
  * @param link
  */
-function show(title,msg,link) {
+function show(title, msg, link) {
     console.info(title);
     var instance = new Notification(
         title, {
             body: msg
         }
     );
-    window.open(link,"_blank");
+    window.open(link, "_blank");
     instance.onclick = function () {
-        window.open(link,"_blank");
+        window.open(link, "_blank");
     };
 }
