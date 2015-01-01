@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>百度贴吧特别关注服务</title>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+        var teibas = ["java"];
+        var base_teibaurl = "http://tieba.baidu.com/mo/sz/m?kw=";
+        var base_teizhiurl = "http://tieba.baidu.com/mo/m?kz=";
+        var teizhilist = [];
+        var setting = loadSetting();
+        var fav = setting.userlsit;
+        function getAllURL(url) {
+            $.get(url, function (data) {
+                var teibalist = $(data).find("div.i");
+                teibalist.each(function (i, v) {
+                    var teizhi = $(v).find("a").attr("href");
+                    var teizhiurl = base_teizhiurl + teizhi.substr(teizhi.indexOf("?") + 4, 10);
+                    console.info(teizhiurl);
+                    teizhilist.push(teizhiurl);
+                });
+            }, "xml");
+        }
+        for (var i = 0, ilen = teibas.length; i < ilen; i++) {
+            console.info("当前贴吧是:" + teibas[i]);
+            var teibaurls = [base_teibaurl + teibas[i], base_teibaurl + teibas[i] + "&pn=30"];
+            console.info("前两面的url地址是:" + teibaurls);
+            for (var j = 0, jlen = teibaurls.length; j < jlen; j++) {
+                console.info("当前的url地址是：" + teibaurls[j]);
+                getAllURL(teibaurls[j]);
+            }
+        }
+
+        for (var i = 0, len = teizhilist.length; i < len; i++) {
+            var url = teizhilist[i];
+
+        }
+
+        /**
+         * 加载设置
+         * @returns {{userlsit: (Array|*), times: *}}
+         */
+        function loadSetting() {
+            var rt = window.external.mxGetRuntime();
+            var str = rt.storage.getConfig("username");
+            var times = rt.storage.getConfig("times");
+            userlsit = str.split(',');
+            return {"userlsit": userlsit, "times": times};
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>

@@ -8,7 +8,7 @@ console.info(setting.times);
 console.info(fav);
 window.Notification.requestPermission();
 var Notification = window.Notification || window.mozNotification || window.webkitNotification;
-
+var tips_Notification = [];
 /**
  * 查找用户与当前帖子链接
  * @param links
@@ -53,13 +53,16 @@ function checkuser(result) {
 /**
  * 解析首页所有帖子
  */
-for (var i = 0, len = teilist.length; i < len; i++) {
-    console.info("查找当前帖子[" + (i + 1) + "]的链接......");
-    var links = teilist[i].getElementsByTagName("a");
-    var result = getlink(links);
-    checkuser(result);
-    console.info("\n")
+function loadTips(){
+    for (var i = 0, len = teilist.length; i < len; i++) {
+        console.info("查找当前帖子[" + (i + 1) + "]的链接......");
+        var links = teilist[i].getElementsByTagName("a");
+        var result = getlink(links);
+        checkuser(result);
+        console.info("\n")
+    }
 }
+
 
 /**
  * 弹出提示有特别关注用户并打开帖子地址
@@ -74,7 +77,11 @@ function show(title, msg, link) {
             body: msg
         }
     );
-    window.open(link, "_blank");
+	tips_Notification.push(instance);
+    // var urllist = tabURLList();
+    // if (urllist.indexOf(link) == -1) {
+        // window.open(link, "_blank");
+    // }
     instance.onclick = function () {
         window.open(link, "_blank");
         instance.cancel();
@@ -96,10 +103,36 @@ function loadSetting() {
 /**
  * 刷新页面
  */
-function timer(){
+function timer() {
     location.reload();
 }
 
-if(location.href.indexOf("tieba.baidu.com") != -1){
+/**
+ * 关闭提示窗
+ */
+function timer() {
+    tips_Notification.pop().cancel();
+}
+
+//程序入口
+if (location.href.indexOf("tieba.baidu.com") != -1) {
     var times = setInterval(timer, setting.times * 1000);
+	var times_tips_Notification = setInterval(timer, 5 * 1000);
+    loadTips();
+}
+
+
+function tabURLList () {
+    var rt = window.external.mxGetRuntime();
+    // 获取浏览器接口
+    var list = [];
+    var tabs = rt.create("mx.browser.tabs");
+    for (var i = 0, len = tabs.length; i < len; i++) {
+        var tab = tabs.getTab(i);
+        var url = tab.url;
+        if (url.indexOf("http://tieba.baidu.com/p/") != -1) {
+            list.push(tab.url)
+        }
+    }
+    return list;
 }
