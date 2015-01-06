@@ -7,7 +7,6 @@ var fav = setting.userlsit;
 console.info(setting.times);
 console.info(fav);
 window.Notification.requestPermission();
-var Notification = window.Notification || window.mozNotification || window.webkitNotification;
 var tips_Notification = [];
 
 /**
@@ -16,18 +15,23 @@ var tips_Notification = [];
  * @param msg
  * @param link
  */
-function show(title, msg, link) {
-    console.info(title);
-    var instance = new Notification(
-        title, {
-            body: msg
-        }
-    );
-    tips_Notification.push(instance);
-    instance.onclick = function () {
-        window.open(link, "_blank");
-        instance.cancel();
-    };
+function show(username, msg, link) {
+	var url = "http://tieba.baidu.com/home/get/panel?ie=utf-8&un="+encodeURIComponent(username);
+	$.get(url, function (data) {
+		var code = data.data.portrait;
+		var imgurl = "http://tb.himg.baidu.com/sys/portrait/item/"+code;
+		var instance = webkitNotifications.createNotification(
+			imgurl,
+			"["+username+"] 有新的帖子!",
+			msg
+		);
+		instance.show();
+		tips_Notification.push(instance);
+		instance.onclick = function () {
+			window.open(link, "_blank");
+			instance.cancel();
+		};
+	});
 }
 
 /**
@@ -53,25 +57,31 @@ function canel_tips_Notification() {
     }
 }
 
-function isNotNull(value){
+function isNotNull(value) {
     return value != "" && value != undefined && value != null;
 }
 
 function tips_Notification_show() {
     var rt = window.external.mxGetRuntime();
     var teizhistr = rt.storage.getConfig("teizhi");
-    if(isNotNull(teizhistr)){
-        console.info(teizhistr);
+    if (isNotNull(teizhistr)) {
         var favTeiZhi = JSON.parse(teizhistr);
         var oneteizhi = favTeiZhi.pop();
         rt.storage.setConfig("teizhi", JSON.stringify(favTeiZhi));
-        show(oneteizhi.title,oneteizhi.username + "有新帖子!", oneteizhi.url);
+        if (isNotNull(oneteizhi)) {
+            show(oneteizhi.username, oneteizhi.title, oneteizhi.url);
+        }
     }
+}
+
+function page_timers(){
+	location.reload();//释放页面资源
 }
 
 //程序入口
 if (location.href.indexOf("tieba.baidu.com") != -1) {
     var _tips_Notification_show = setInterval(tips_Notification_show, 1500);
-    var _times_tips_Notification = setInterval(canel_tips_Notification, 5 * 1000);
+    var _page_timers = setInterval(page_timers, 1000*60*30);
+    var _times_tips_Notification = setInterval(canel_tips_Notification, 10 * 1000);
 }
 
