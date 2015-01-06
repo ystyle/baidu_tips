@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>百度贴吧特别关注服务</title>
+    <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+        var teibas = ["java"];
+        var base_teibaurl = "http://tieba.baidu.com/mo/sz/m?kw=";
+        var base_teizhiurl = "http://tieba.baidu.com/mo/m?kz=";
+        var base_pc_teizhiurl = "http://tieba.baidu.com/p/";
+        var teizhilist = [];
+        var setting = loadSetting();
+        var fav = setting.userlsit;
+        function getTeiBaUrlList() {
+            // 拿到关注贴吧的前2页的地址
+            for (var i = 0, ilen = teibas.length; i < ilen; i++) {
+                var teibaurls = [base_teibaurl + teibas[i], base_teibaurl + teibas[i] + "&pn=30"];
+                for (var j = 0, jlen = teibaurls.length; j < jlen; j++) {
+                    getAllURL(teibaurls[j]);
+                }
+            }
+        }
+
+        /**
+         *获取每一个帖子的地址
+         * */
+        function getAllURL(url) {
+            $.get(url, function (data) {
+                var teibalist = $(data).find("div.i");
+                teibalist.each(function (i, v) {
+                    var teizhi = $(v).find("a").attr("href");
+                    var teizhiurl = base_teizhiurl + teizhi.substr(teizhi.indexOf("?") + 4, 10);
+                    teizhilist.push(teizhiurl);
+                });
+            }, "xml");
+        }
+
+        //帖子的人名
+        function getAllUserName() {
+            var url = teizhilist.pop();
+            if (url != "" && url != undefined && url != null) {
+                $.get(url, function (data) {
+                    var title = $(data).find("strong").text();
+                    var link = $(data).find("span.g>a");
+                    link.each(function (i, v) {
+                        var name = $(v).text();
+                        if (fav.indexOf(name) != -1) {
+                            var alink =base_pc_teizhiurl + url.split("=")[1];
+                            var one = {"url": alink, "username": name, "title": title};
+                            saveFavUserTeizhi(one);
+                        }
+                    });
+                }, "xml");
+            }
+        }
+
+        /**
+         * 加载设置
+         * @returns {{userlsit: (Array|*), times: *}}
+         */
+        function loadSetting() {
+            var rt = window.external.mxGetRuntime();
+            var str = rt.storage.getConfig("username");
+            var times = rt.storage.getConfig("times");
+            userlsit = str.split(',');
+            return {"userlsit": userlsit, "times": times};
+        }
+
+        function isNotNull(value){
+            return value != "" && value != undefined && value != null;
+        }
+
+        /**
+         * 保存刷新时间
+         * @param times
+         */
+        function saveFavUserTeizhi(one) {
+            var rt = window.external.mxGetRuntime();
+            var teizhistr = rt.storage.getConfig("teizhi");
+            if(isNotNull(teizhistr)){
+                var favTeiZhi = JSON.parse(teizhistr);
+                if(!isNotNull(favTeiZhi)){
+                    favTeiZhi=[];
+                }
+                if(favTeiZhi.indexOf(one) == -1 ){
+                    favTeiZhi.push(one);
+                }
+                rt.storage.setConfig("teizhi", JSON.stringify(favTeiZhi));
+            }
+        }
+        getTeiBaUrlList();
+        var getUserName_timer = setInterval(getTeiBaUrlList, setting.times * 1000);
+        var getUserName_timer = setInterval(getAllUserName, 16);
+    </script>
+</head>
+<body>
+</body>
+</html>
