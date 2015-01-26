@@ -42,8 +42,16 @@ function loadSetting() {
     var rt = window.external.mxGetRuntime();
     var str = rt.storage.getConfig("username");
     var times = rt.storage.getConfig("times");
+	var teibastr = rt.storage.getConfig("teibas");
+	if(str.charAt(0) == ","){
+		str = str.substr(1)
+	}
     userlsit = str.split(',');
-    return {"userlsit": userlsit, "times": times};
+	if(teibastr.charAt(0) == ","){
+		teibastr = teibastr.substr(1)
+	}
+	teibas = teibastr.split(',');
+    return {"userlsit": userlsit, "times": times,"teibas":teibas};
 }
 
 
@@ -51,8 +59,9 @@ function loadSetting() {
  * 关闭提示窗
  */
 function canel_tips_Notification() {
+	tips_Notification.reverse();
     var oneNotification = tips_Notification.pop();
-    if (oneNotification != "" && oneNotification != undefined && oneNotification != null) {
+    if (isNotNull(oneNotification)) {
         oneNotification.cancel();
     }
 }
@@ -62,16 +71,19 @@ function isNotNull(value) {
 }
 
 function tips_Notification_show() {
-    var rt = window.external.mxGetRuntime();
-    var teizhistr = rt.storage.getConfig("teizhi");
-    if (isNotNull(teizhistr)) {
-        var favTeiZhi = JSON.parse(teizhistr);
-        var oneteizhi = favTeiZhi.pop();
-        rt.storage.setConfig("teizhi", JSON.stringify(favTeiZhi));
-        if (isNotNull(oneteizhi)) {
-            show(oneteizhi.username, oneteizhi.title, oneteizhi.url);
-        }
-    }
+	if(tips_Notification.length<=3){
+		var rt = window.external.mxGetRuntime();
+		var teizhistr = rt.storage.getConfig("teizhi");
+		if (isNotNull(teizhistr)) {
+			var favTeiZhi = JSON.parse(teizhistr);
+			var oneteizhi = favTeiZhi.pop();
+			rt.storage.setConfig("teizhi", JSON.stringify(favTeiZhi));
+			if (isNotNull(oneteizhi)) {
+				console.info(oneteizhi);
+				show(oneteizhi.username, oneteizhi.title, oneteizhi.url);
+			}
+		}
+	}
 }
 
 function page_timers(){
@@ -79,7 +91,7 @@ function page_timers(){
 }
 
 //程序入口
-if (location.href.indexOf("tieba.baidu.com") != -1) {
+if (location.href.indexOf("tieba.baidu.com/f?") != -1) {
     var _tips_Notification_show = setInterval(tips_Notification_show, 1500);
     var _page_timers = setInterval(page_timers, 1000*60*30);
     var _times_tips_Notification = setInterval(canel_tips_Notification, 10 * 1000);

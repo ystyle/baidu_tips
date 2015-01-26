@@ -13,15 +13,25 @@
             $("#lable_add").click(function () {
                 var user = $("#id_user").val();
                 var times = $("#tims_teizhi").val();
+                var teiba = $("#id_teiba").val();
                 saveTimes(times);
-                if (!user) {
-                    return;
+                if (isNotNull(user)) {
+                    addUserToStorage(user);
+					$("#id_user").val("");
                 }
-                addUserToStorage(user);
-                $("#id_user").val("");
+                
+				if(isNotNull(teiba)){
+					addTeibaToStorage(teiba);
+					$("#id_teiba").val("");
+				}
+				
             });
             loadSetting();
         });
+
+		function isNotNull(value) {
+			return value != "" && value != undefined && value != null;
+		}
 
         /**
          * 保存刷新时间
@@ -33,6 +43,25 @@
             rt.storage.setConfig("times", times);
         }
 
+		/**
+         * 添加一个贴吧
+         * @param user
+         */
+        function addTeibaToStorage(teiba) {
+            var rt = window.external.mxGetRuntime();
+            var str = rt.storage.getConfig("teibas");
+			if(str.charAt(0) == ","){
+				str = str.substr(1)
+			}
+            teibas = str.split(',');
+            if ($.inArray(teiba, teibas) != -1) {
+                return;
+            }
+            teibas.push(teiba);
+            rt.storage.setConfig("teibas", teibas.join(","));
+            teiba_add(teiba);
+        }
+		
         /**
          * 添加一个用户id
          * @param user
@@ -40,12 +69,15 @@
         function addUserToStorage(user) {
             var rt = window.external.mxGetRuntime();
             var str = rt.storage.getConfig("username");
+			if(str.charAt(0) == ","){
+				str = str.substr(1)
+			}
             userlsit = str.split(',');
             if ($.inArray(user, userlsit) != -1) {
                 return;
             }
             userlsit.push(user);
-            rt.storage.setConfig("username", userlsit.toString());
+            rt.storage.setConfig("username", userlsit.join(","));
             tips_add(user);
         }
         /**
@@ -55,9 +87,27 @@
         function delUserToStorage(user) {
             var rt = window.external.mxGetRuntime();
             var str = rt.storage.getConfig("username");
+			if(str.charAt(0) == ","){
+				str = str.substr(1)
+			}
             userlsit = str.split(',');
             userlsit.pop(user);
-            rt.storage.setConfig("username", userlsit.toString());
+            rt.storage.setConfig("username", userlsit.join(","));
+        }
+		
+		/**
+         * 删除一个贴吧
+         * @param user
+         */
+        function delTeibaToStorage(teiba) {
+            var rt = window.external.mxGetRuntime();
+            var str = rt.storage.getConfig("teibas");
+			if(str.charAt(0) == ","){
+				str = str.substr(1)
+			}
+            teibas = str.split(',');
+            teibas.pop(teiba);
+            rt.storage.setConfig("teibas", teibas.join(","));
         }
 
         /**
@@ -66,10 +116,23 @@
         function loadSetting() {
             var rt = window.external.mxGetRuntime();
             var str = rt.storage.getConfig("username");
+			if(str.charAt(0) == ","){
+				str = str.substr(1)
+			}
             userlsit = str.split(',');
             for (var name in userlsit) {
                 if (userlsit[name]) {
                     tips_add(userlsit[name]);
+                }
+            }
+			var tstr = rt.storage.getConfig("teibas");
+			if(tstr.charAt(0) == ","){
+				tstr = tstr.substr(1)
+			}
+            teibas = tstr.split(',');
+            for (var teiba in teibas) {
+                if (teibas[teiba]) {
+                    teiba_add(teibas[teiba]);
                 }
             }
             var times = rt.storage.getConfig("times");
@@ -84,6 +147,15 @@
             delUserToStorage($(id).text());
             $(id).remove();
         }
+		
+		/**
+         * 删除一个贴吧
+         * @param id
+         */
+        function teiba_del(id) {
+            delTeibaToStorage($(id).text());
+            $(id).remove();
+        }
 
         /**
          * 添加一个标签
@@ -93,13 +165,23 @@
             var lable = "<span class='label label-primary' onclick='tips_del(this)' style='cursor: hand;margin: 5px;display: inline-block'>" + user + "</span>";
             $("#tips").append(lable);
         }
+		/**
+         * 添加一个贴吧
+         * @param user
+         */
+        function teiba_add(teiba) {
+            var lable = "<span class='label label-primary' onclick='teiba_del(this)' style='cursor: hand;margin: 5px;display: inline-block'>" + teiba + "</span>";
+            $("#teiba").append(lable);
+        }
     </script>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row-fluid" style="margin-top: 10px;">
         <div class="span12">
-            <span class='label label-info'>贴吧用户ID:</span>
+            <span class='label label-info'>贴吧:</span>
+            <input class="input-medium search-query" type="text" id="id_teiba"/>
+			<span class='label label-info'>贴吧用户ID:</span>
             <input class="input-medium search-query" type="text" id="id_user"/>
             <span class='label label-info'>刷新时间(s):</span>
             <input class="input-medium search-query" type="text" id="tims_teizhi"/>
@@ -107,6 +189,11 @@
         </div>
     </div>
     <div class="row-fluid" style="margin-top: 20px;bordor:solid 1xp blue">
+        <div class="span12" id="teiba">
+            <hr/>
+        </div>
+    </div>
+	<div class="row-fluid" style="margin-top: 20px;bordor:solid 1xp blue">
         <div class="span12" id="tips">
             <hr/>
         </div>

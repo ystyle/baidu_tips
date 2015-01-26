@@ -5,13 +5,14 @@
     <title>百度贴吧特别关注服务</title>
     <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
     <script type="text/javascript">
-        var teibas = ["java"];
+        
         var base_teibaurl = "http://tieba.baidu.com/mo/sz/m?kw=";
         var base_teizhiurl = "http://tieba.baidu.com/mo/m?kz=";
         var base_pc_teizhiurl = "http://tieba.baidu.com/p/";
         var teizhilist = [];
         var setting = loadSetting();
         var fav = setting.userlsit;
+		var teibas = setting.teibas;
         function getTeiBaUrlList() {
             // 拿到关注贴吧的前2页的地址
             for (var i = 0, ilen = teibas.length; i < ilen; i++) {
@@ -42,15 +43,18 @@
             if (url != "" && url != undefined && url != null) {
                 $.get(url, function (data) {
                     var title = $(data).find("strong").text();
-                    var link = $(data).find("span.g>a");
-                    link.each(function (i, v) {
-                        var name = $(v).text();
-                        if (fav.indexOf(name) != -1) {
-                            var alink =base_pc_teizhiurl + url.split("=")[1];
-                            var one = {"url": alink, "username": name, "title": title};
-                            saveFavUserTeizhi(one);
-                        }
-                    });
+					var lous = $(data).find("td.l");
+					lous.each(function (i, v) {
+						var cdate = $(v).find("span.b").text();
+						if(cdate.length==5){
+							var name = $(v).find("span.g>a").text();
+							if (fav.indexOf(name) != -1) {
+								var alink =base_pc_teizhiurl + url.split("=")[1];
+								var one = {"url": alink, "username": name, "title": title};
+								console.info(one);
+							}
+						}
+					});
                 }, "xml");
             }
         }
@@ -63,8 +67,16 @@
             var rt = window.external.mxGetRuntime();
             var str = rt.storage.getConfig("username");
             var times = rt.storage.getConfig("times");
+			var teibastr = rt.storage.getConfig("teibas");
+			if(str.charAt(0) == ","){
+				str = str.substr(1)
+			}
             userlsit = str.split(',');
-            return {"userlsit": userlsit, "times": times};
+			if(teibastr.charAt(0) == ","){
+				teibastr = teibastr.substr(1)
+			}
+			teibas = teibastr.split(',');
+            return {"userlsit": userlsit, "times": times,"teibas":teibas};
         }
 
         function isNotNull(value){
