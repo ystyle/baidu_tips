@@ -9,6 +9,8 @@
 >点击可打开帖子
 
 
+[插件下载](https://code.csdn.net/ystyle_/baidu_tips/blob/package/baidu.tips.lxy520.net.mxaddon)
+
 **没有遨游的可以复制 *main.bak.js* 直接贴到浏览器里**
 
 **注意 *main.bak.js* 要自己修改fav数组,添加自己关注的人....**
