@@ -1,11 +1,8 @@
-﻿console.info("插件加载");
-console.info("解析帖子信息......");
-var teilist = document.getElementsByClassName("j_thread_list clearfix");
-console.info("设置特别关注用户......\n");
+﻿console.info("贴吧特别关注[消息提示模块]:正在加载...");
+console.info("读取配置......\n");
 var setting = loadSetting();
 var fav = setting.userlsit;
-console.info(setting.times);
-console.info(fav);
+console.info(setting);
 window.Notification.requestPermission();
 var tips_Notification = [];
 
@@ -20,17 +17,17 @@ function show(username, msg, link) {
 	$.get(url, function (data) {
 		var code = data.data.portrait;
 		var imgurl = "http://tb.himg.baidu.com/sys/portrait/item/"+code;
-		var instance = webkitNotifications.createNotification(
-			imgurl,
-			"["+username+"] 有新的帖子!",
-			msg
-		);
-		instance.show();
-		tips_Notification.push(instance);
+		var instance = webkitNotifications.createNotification(imgurl,"["+username+"] 有新的帖子!",msg);
+		instance.ondisplay = function(event) {
+			setTimeout(function() {
+				event.currentTarget.cancel();
+			}, 5 * 1000);
+        };
 		instance.onclick = function () {
 			window.open(link, "_blank");
 			instance.cancel();
 		};
+		instance.show();
 	});
 }
 
@@ -55,17 +52,6 @@ function loadSetting() {
 }
 
 
-/**
- * 关闭提示窗
- */
-function canel_tips_Notification() {
-	tips_Notification.reverse();
-    var oneNotification = tips_Notification.pop();
-    if (isNotNull(oneNotification)) {
-        oneNotification.cancel();
-    }
-}
-
 function isNotNull(value) {
     return value != "" && value != undefined && value != null;
 }
@@ -79,7 +65,7 @@ function tips_Notification_show() {
 			var oneteizhi = favTeiZhi.pop();
 			rt.storage.setConfig("teizhi", JSON.stringify(favTeiZhi));
 			if (isNotNull(oneteizhi)) {
-				console.info(oneteizhi);
+				console.info(new Date().toLocaleTimeString()+":"+JSON.stringify(oneteizhi));
 				show(oneteizhi.username, oneteizhi.title, oneteizhi.url);
 			}
 		}
@@ -94,6 +80,5 @@ function page_timers(){
 if (location.href.indexOf("tieba.baidu.com/f?") != -1) {
     var _tips_Notification_show = setInterval(tips_Notification_show, 1500);
     var _page_timers = setInterval(page_timers, 1000*60*30);
-    var _times_tips_Notification = setInterval(canel_tips_Notification, 10 * 1000);
 }
 
