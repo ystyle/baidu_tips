@@ -21,7 +21,7 @@ function show(username, msg, link) {
 		instance.ondisplay = function(event) {
 			setTimeout(function() {
 				event.currentTarget.cancel();
-			}, 5 * 1000);
+			}, 7 * 1000);
         };
 		instance.onclick = function () {
 			window.open(link, "_blank");
@@ -36,26 +36,36 @@ function show(username, msg, link) {
  * @returns {{userlsit: (Array|*), times: *}}
  */
 function loadSetting() {
+    // 读取
     var rt = window.external.mxGetRuntime();
-    var str = rt.storage.getConfig("username");
-    var times = rt.storage.getConfig("times");
+    var usernamestr = rt.storage.getConfig("username");
+    var timesstr = rt.storage.getConfig("times");
 	var teibastr = rt.storage.getConfig("teibas");
-	if(str.charAt(0) == ","){
-		str = str.substr(1)
-	}
-    userlsit = str.split(',');
-	if(teibastr.charAt(0) == ","){
-		teibastr = teibastr.substr(1)
-	}
-	teibas = teibastr.split(',');
+    // 反序列化
+    var userlsit = JSON.parse(usernamestr);
+    var times = JSON.parse(timesstr);
+    var teibas = JSON.parse(teibastr);
+    if(!isNotNull(userlsit)){
+        userlsit = [];
+    }
+    if(!isNotNull(teibas)){
+        teibas = [];
+    }
     return {"userlsit": userlsit, "times": times,"teibas":teibas};
 }
 
-
+/**
+ * 判断非空
+ * @param value
+ * @returns {boolean}
+ */
 function isNotNull(value) {
     return value != "" && value != undefined && value != null;
 }
 
+/**
+ * 显示提示
+ */
 function tips_Notification_show() {
 	if(tips_Notification.length<=3){
 		var rt = window.external.mxGetRuntime();
@@ -72,6 +82,9 @@ function tips_Notification_show() {
 	}
 }
 
+/**
+ * 释放页面资源
+ */
 function page_timers(){
 	location.reload();//释放页面资源
 }

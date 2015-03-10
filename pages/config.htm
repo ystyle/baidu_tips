@@ -1,6 +1,6 @@
 <html>
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
@@ -9,172 +9,8 @@
     <script src="../js/jquery-2.1.1.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="../js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#lable_add").click(function () {
-                var user = $("#id_user").val();
-                var times = $("#tims_teizhi").val();
-                var teiba = $("#id_teiba").val();
-                saveTimes(times);
-                if (isNotNull(user)) {
-                    addUserToStorage(user);
-					$("#id_user").val("");
-                }
-                
-				if(isNotNull(teiba)){
-					addTeibaToStorage(teiba);
-					$("#id_teiba").val("");
-				}
-				
-            });
-            loadSetting();
-        });
-
-		function isNotNull(value) {
-			return value != "" && value != undefined && value != null;
-		}
-
-        /**
-         * 保存刷新时间
-         * @param times
-         */
-        function saveTimes(times) {
-            var rt = window.external.mxGetRuntime();
-            var teizhistr = rt.storage.getConfig("teizhi");
-            rt.storage.setConfig("times", times);
-        }
-
-		/**
-         * 添加一个贴吧
-         * @param user
-         */
-        function addTeibaToStorage(teiba) {
-            var rt = window.external.mxGetRuntime();
-            var str = rt.storage.getConfig("teibas");
-			if(str.charAt(0) == ","){
-				str = str.substr(1)
-			}
-            teibas = str.split(',');
-            if ($.inArray(teiba, teibas) != -1) {
-                return;
-            }
-            teibas.push(teiba);
-            rt.storage.setConfig("teibas", teibas.join(","));
-            teiba_add(teiba);
-        }
-		
-        /**
-         * 添加一个用户id
-         * @param user
-         */
-        function addUserToStorage(user) {
-            var rt = window.external.mxGetRuntime();
-            var str = rt.storage.getConfig("username");
-			if(str.charAt(0) == ","){
-				str = str.substr(1)
-			}
-            userlsit = str.split(',');
-            if ($.inArray(user, userlsit) != -1) {
-                return;
-            }
-            userlsit.push(user);
-            rt.storage.setConfig("username", userlsit.join(","));
-            tips_add(user);
-        }
-        /**
-         * 删除一个用户ID
-         * @param user
-         */
-        function delUserToStorage(user) {
-            var rt = window.external.mxGetRuntime();
-            var str = rt.storage.getConfig("username");
-			if(str.charAt(0) == ","){
-				str = str.substr(1)
-			}
-            userlsit = str.split(',');
-            userlsit.pop(user);
-            rt.storage.setConfig("username", userlsit.join(","));
-        }
-		
-		/**
-         * 删除一个贴吧
-         * @param user
-         */
-        function delTeibaToStorage(teiba) {
-            var rt = window.external.mxGetRuntime();
-            var str = rt.storage.getConfig("teibas");
-			if(str.charAt(0) == ","){
-				str = str.substr(1)
-			}
-            teibas = str.split(',');
-            teibas.pop(teiba);
-            rt.storage.setConfig("teibas", teibas.join(","));
-        }
-
-        /**
-         * 加载设置
-         */
-        function loadSetting() {
-            var rt = window.external.mxGetRuntime();
-            var str = rt.storage.getConfig("username");
-			if(str.charAt(0) == ","){
-				str = str.substr(1)
-			}
-            userlsit = str.split(',');
-            for (var name in userlsit) {
-                if (userlsit[name]) {
-                    tips_add(userlsit[name]);
-                }
-            }
-			var tstr = rt.storage.getConfig("teibas");
-			if(tstr.charAt(0) == ","){
-				tstr = tstr.substr(1)
-			}
-            teibas = tstr.split(',');
-            for (var teiba in teibas) {
-                if (teibas[teiba]) {
-                    teiba_add(teibas[teiba]);
-                }
-            }
-            var times = rt.storage.getConfig("times");
-            $("#tims_teizhi").val(times);
-        }
-
-        /**
-         * 删除一个标签
-         * @param id
-         */
-        function tips_del(id) {
-            delUserToStorage($(id).text());
-            $(id).remove();
-        }
-		
-		/**
-         * 删除一个贴吧
-         * @param id
-         */
-        function teiba_del(id) {
-            delTeibaToStorage($(id).text());
-            $(id).remove();
-        }
-
-        /**
-         * 添加一个标签
-         * @param user
-         */
-        function tips_add(user) {
-            var lable = "<span class='label label-primary' onclick='tips_del(this)' style='cursor: hand;margin: 5px;display: inline-block'>" + user + "</span>";
-            $("#tips").append(lable);
-        }
-		/**
-         * 添加一个贴吧
-         * @param user
-         */
-        function teiba_add(teiba) {
-            var lable = "<span class='label label-primary' onclick='teiba_del(this)' style='cursor: hand;margin: 5px;display: inline-block'>" + teiba + "</span>";
-            $("#teiba").append(lable);
-        }
-    </script>
+    <script type="text/javascript" src="../js/MxStorage.js"></script>
+    <script type="text/javascript" src="../js/config.js"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -182,7 +18,7 @@
         <div class="span12">
             <span class='label label-info'>贴吧:</span>
             <input class="input-medium search-query" type="text" id="id_teiba"/>
-			<span class='label label-info'>贴吧用户ID:</span>
+            <span class='label label-info'>贴吧用户ID:</span>
             <input class="input-medium search-query" type="text" id="id_user"/>
             <span class='label label-info'>刷新时间(s):</span>
             <input class="input-medium search-query" type="text" id="tims_teizhi"/>
@@ -194,12 +30,12 @@
             <hr/>
         </div>
     </div>
-	<div class="row-fluid" style="margin-top: 20px;bordor:solid 1xp blue">
+    <div class="row-fluid" style="margin-top: 20px;bordor:solid 1xp blue">
         <div class="span12" id="tips">
             <hr/>
         </div>
     </div>
-	<hr/>
+    <hr/>
 </div>
 </body>
 </html>
