@@ -10,4 +10,4 @@
 
 
 [遨游浏览器插件下载](http://extension.maxthon.cn/detail/index.php?view_id=2774)
-[谷歌浏览器插件下载](https://code.csdn.net/ystyle_/baidu_tips/blob/package/chrome-baidu_tips.crx)
+[谷歌浏览器插件下载](http://pan.baidu.com/s/1mgIGii0) 提取密码：`7sey`
