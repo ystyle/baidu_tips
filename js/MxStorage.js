@@ -43,6 +43,22 @@ function addOne(key,obj){
 }
 
 /**
+ * 添加一个元素
+ * @param key
+ * @param obj
+ */
+function addOneNoRepeat(key,obj){
+    var data = readJSON(key);
+    if(!isNotNull(data)){
+        data = [];
+    }
+    if(!_.findWhere(data, {url: obj.url})){
+        data.push(obj);
+        save(key,data);
+    }
+}
+
+/**
  * 删除一个元素
  * @param key
  * @param obj
@@ -52,7 +68,8 @@ function removeOne(key,obj){
     if(!isNotNull(data)){
         data = [];
     }
-    data.pop(obj);
+    var index = _.indexOf(data,obj);
+    data.splice(index,1);
     save(key,data);
 }
 

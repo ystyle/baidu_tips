@@ -9,5 +9,9 @@
 >点击可打开帖子
 
 
+### 更新说明
+1. 设置里删除不了用户名或贴吧的问题
+2. 不再一次性提示重复N条同样的帖子
+
 [遨游浏览器插件下载](http://extension.maxthon.cn/detail/index.php?view_id=2774)
 [谷歌浏览器插件下载](http://pan.baidu.com/s/1mgIGii0) 提取密码：`7sey`

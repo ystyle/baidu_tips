@@ -72,7 +72,7 @@ function tips_Notification_show() {
 		var teizhistr = rt.storage.getConfig("teizhi");
 		if (isNotNull(teizhistr)) {
 			var favTeiZhi = JSON.parse(teizhistr);
-			var oneteizhi = favTeiZhi.pop();
+			var oneteizhi = favTeiZhi.shift();
 			rt.storage.setConfig("teizhi", JSON.stringify(favTeiZhi));
 			if (isNotNull(oneteizhi)) {
 				console.info(new Date().toLocaleTimeString()+":"+JSON.stringify(oneteizhi));

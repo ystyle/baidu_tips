@@ -77,7 +77,7 @@ function loadSetting() {
  * @param one
  */
 function saveFavUserTeizhi(one) {
-    addOne("teizhi", one);
+    addOneNoRepeat("teizhi", one);
 }
 
 getTeiBaUrlList();
